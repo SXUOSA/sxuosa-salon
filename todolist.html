@@ -1,0 +1,198 @@
+<head>
+    <title>Todo List</title>
+    <style>
+        body {
+            background: rgb(214, 213, 213);
+        }
+
+        .wrap {
+            background: white;
+            margin: 0 auto;
+            width: 400px;
+            height: 800px;
+            border-radius: 5px;
+            box-shadow: 1.5px 1.5px 1.5px 1.5px rgba(189, 189, 189, 0.5);
+        }
+
+        .wrap:hover {
+            transition: all 0.5s;
+            box-shadow: 3px 3px 3px 1.5px rgba(189, 189, 189, 0.5);
+        }
+
+        .header {
+            height: 40px;
+            border-bottom: 3px solid rgba(0, 102, 255, 0.719);
+        }
+
+        .header_button {
+            float: right;
+            position: relative;
+            /* top: 2px; */
+            right: 10px;
+            border:none;
+            line-height: 40px;
+            background: transparent;
+            color:blue;
+        }
+
+        .header_button:hover {
+            color: rgb(7, 7, 209);
+        }
+
+        .input {
+            margin-top:8px;
+            line-height: 20px;
+            position: relative;
+            left: 10px;
+        }
+
+        .list ul{
+            margin:0;
+            padding: 0;
+        }
+
+        .list li {
+            line-height: 30px;
+            height: 30px;
+            list-style: none;
+            padding-left:10px;
+            background: rgb(179, 179, 255);
+        }
+
+        .list a {
+            float: right;
+            position: relative;
+        }
+
+        .list a:hover,button:hover {
+            transform: scale(1.1);
+            transition: all .5s;
+            border: 1px solid rgba(0, 162, 255, 0.3);
+            border-radius: 5px;
+        }
+
+        #to_be_done_matters {
+            margin-left: -1px;
+            margin-right: -1px;
+            margin-top: -1px;
+            height: 400px;
+        }
+
+        #done_matters {
+            margin-left: -1px;
+            margin-right: -1px;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrap">
+        <div id="to_be_done_matters">
+            <div id="to_be_done_matters_header" class="header">
+                <input type="text" id="to_be_done_matters_input" class="input">
+                <button id="to_be_done_matters_button" class="header_button">
+                    添加待办事项
+                </button>
+            </div>
+            <div id="to_be_done_matters_list" class="list">
+                <ul>
+                    <!-- <li>
+                        <a class="do_matter">完成该事项</a>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <div id="done_matters">
+            <div id="done_matters_header" class="header">
+                <input type="text" id="done_matters_input" class="input">
+                <button id="done_matters_button" class="header_button">
+                    添加已经完成事项
+                </button>
+            </div>
+            <div id="done_matters_list" class="list">
+                <ul>
+                    <!-- <li>
+                        <a href="">删除该事项</a>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 监听DOM加载结束，确保所有的元素加载完毕，然后执行JS
+        document.addEventListener('DOMContentLoaded', function(){
+            // 用于存储事件
+            var todo_items = [];
+            var done_items = [];
+
+            // 获取所有我们要操作的DOM元素
+            var todo_button = document.getElementById("to_be_done_matters_button");
+            var done_button = document.getElementById("done_matters_button");
+            var todo_input = document.getElementById("to_be_done_matters_input");
+            var done_input = document.getElementById("done_matters_input");
+            var todo_list = document.getElementById("to_be_done_matters_list");
+            var done_list = document.getElementById("done_matters_list");
+            var do_matter, delete_matter;
+            
+
+            // 渲染
+            function render_todo () {
+                var render_string = "<ul>";
+                for (var i = 0; i < todo_items.length; i++) {
+                    render_string += "<li>" + todo_items[i] + "<a class='do_matter' data-index='"+ i +"'>完成该事项</a>" + "</li>";
+                }
+                render_string += "</ul>"
+                do_matter = document.getElementsByClassName("do_matter");
+                todo_list.innerHTML = render_string;
+                for (var i = 0; i < do_matter.length; i++) {
+                    do_matter[i].onclick = function (target) {
+                        var sourceElement = target.srcElement
+                        var index = sourceElement.dataset.index;
+                        var data = todo_items[index];
+                        todo_items.splice(index, 1);
+                        done_items.push(data);
+                        render_todo();
+                        render_done();
+                    }
+                }
+            }
+
+            function render_done () {
+                var render_string = "<ul>";
+                for (var i = 0; i < done_items.length; i++) {
+                    render_string += "<li>" + done_items[i] + "<a class='delete_matter' data-index='"+ i + "'>删除该事项</a>" + "</li>";
+                }
+                render_string += "</ul>"
+                delete_matter = document.getElementsByClassName("delete_matter");
+                done_list.innerHTML = render_string;
+                for (var i = 0; i < delete_matter.length; i++) {
+                    delete_matter[i].addEventListener("click", function (target) {
+                        var sourceElement = target.srcElement
+                        var index = sourceElement.dataset.index;
+                        done_items.splice(index, 1);
+                        render_done();
+                    })
+                }
+            }
+
+            function add_todo_item () {
+                var temp_item = todo_input.value;
+                todo_items.push(temp_item)
+                render_todo();
+            }
+
+            function add_done_item () {
+                var temp_item = done_input.value;
+                done_items.push(temp_item)
+                render_done();
+            }
+
+            todo_button.addEventListener("click", add_todo_item);
+            done_button.addEventListener("click", add_done_item);
+
+        }, false);
+    </script>
+</body>
